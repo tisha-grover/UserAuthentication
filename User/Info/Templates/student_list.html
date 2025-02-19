@@ -1,0 +1,38 @@
+<!-- student_list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student List</title>
+</head>
+<body>
+    <h2>All Registered Students</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Event</th>
+                <th>Visitor Type</th>
+                <th>Phone</th>
+                <th>College</th>
+                <th>UID</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.name }}</td>
+                <td>{{ student.event }}</td>
+                <td>{{ student.visitor_type }}</td>
+                <td>{{ student.phone_number }}</td>
+                <td>{{ student.college_name }}</td>
+                <td>{{ student.UID }}</td>
+                <td><a href="{% url 'student_detail' student.id %}">View Details</a></td>  <!-- Ensure the student.id is passed -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
