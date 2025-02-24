@@ -1,5 +1,10 @@
 from django.db import models
-from django.utils.timezone import now
+from django.utils.timezone import now, timedelta
+from django.contrib.auth.models import AbstractUser
+# import random
+# import uuid
+class User(AbstractUser):
+    pass
 
 class Student(models.Model):
     name = models.CharField(max_length=100)
@@ -29,4 +34,25 @@ class StudentDetails(models.Model):
     additional_info = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Details for {self.student.name} at {self.detail_timestamp.strftime('%Y-%m-%d %H:%M:%S')}"    
+        return f"Details for {self.student.name} at {self.detail_timestamp.strftime('%Y-%m-%d %H:%M:%S')}" 
+    
+# class OTP(models.Model):
+#     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="otps")
+#     otp_code = models.CharField(max_length=6)  # Stores the 6-digit OTP
+#     created_at = models.DateTimeField(default=now)  # Timestamp when OTP is created
+#     expires_at = models.DateTimeField(default=lambda: now() + timedelta(minutes=5))  # OTP expires in 5 minutes
+#     is_verified = models.BooleanField(default=False)  # Tracks whether OTP is used
+
+#     def __str__(self):
+#         return f"OTP for {self.student.name} - {self.otp_code} (Expires: {self.expires_at.strftime('%H:%M:%S')})"
+
+#     def is_expired(self):
+#         """Check if OTP is expired"""
+#         return now() > self.expires_at
+
+#     @classmethod
+#     def generate_otp(cls, student):
+#         """Generate a new OTP for a student"""
+#         otp = str(random.randint(100000, 999999))  
+#         otp_entry = cls.objects.create(student=student, otp_code=otp)
+#         return otp_entry       

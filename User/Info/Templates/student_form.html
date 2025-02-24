@@ -33,12 +33,38 @@
         .btn-success:hover {
             transform: translateY(-5px);
         }
+        .btn-disabled {
+            background: gray !important;
+            cursor: not-allowed;
+        }
     </style>
+    <script>
+        function verifyDetails() {
+            let formData = new FormData(document.getElementById("student-form"));
+            
+            fetch("{% url 'verify_ocr' %}", {
+                method: "POST",
+                body: formData,
+                headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("submit-btn").disabled = false;
+                    document.getElementById("submit-btn").classList.remove("btn-disabled");
+                    document.getElementById("verify-message").innerHTML = `<p class="text-success"><strong>Verification Successful!</strong></p>`;
+                } else {
+                    document.getElementById("verify-message").innerHTML = `<p class="text-danger"><strong>Error: ${data.error}</strong></p>`;
+                }
+            })
+            .catch(error => console.error("Verification Error:", error));
+        }
+    </script>
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100">
     <div class="form-container">
         <h2 class="text-center mb-4">Register Student</h2>
-        <form method="post" enctype="multipart/form-data">
+        <form id="student-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="text" name="name" class="form-control" placeholder="Name" required>
             <select name="event" class="form-control" required>
@@ -53,8 +79,16 @@
             <input type="text" name="college_name" class="form-control" placeholder="College Name" required>
             <input type="text" name="UID" class="form-control" placeholder="Unique ID" required>
             <input type="file" name="college_id_card" class="form-control" required>
-            <button type="submit" class="btn btn-success w-100 mt-3">Submit</button>
+
+            <!-- Verify Button -->
+            <button type="button" class="btn btn-success w-100 mt-3" onclick="verifyDetails()">Verify</button>
+            
+            <div id="verify-message" class="mt-2"></div>
+
+            <!-- Submit Button (Disabled initially) -->
+            <button type="submit" id="submit-btn" class="btn btn-success w-100 mt-3 btn-disabled" disabled>Submit</button>
         </form>
+
         {% if messages %}
             <div class="mt-3">
                 {% for message in messages %}
@@ -65,3 +99,4 @@
     </div>
 </body>
 </html>
+<!-- Compare this snippet from User/Info/Templates/student_form.html: -->
