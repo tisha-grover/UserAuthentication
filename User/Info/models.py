@@ -23,14 +23,16 @@ class Student(models.Model):
     UID = models.CharField(max_length=15)
 
     college_id_card = models.ImageField(upload_to='college_id_cards/')
-    registration_time = models.DateTimeField(default=now)  # New field added
+    registration_time = models.DateTimeField(auto_now_add=now)  # New field added
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
 
-    def __str__(self):
-        return f"{self.name} - {self.registration_time.strftime('%Y-%m-%d %H:%M:%S')}"
+
+    # def __str__(self):
+    #     return f"{self.name} - {self.registration_time.strftime('%Y-%m-%d %H:%M:%S')}"
     
 class StudentDetails(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='details')
-    detail_timestamp = models.DateTimeField(default=now)
+    detail_timestamp = models.DateTimeField(auto_now_add=now)
     additional_info = models.TextField(blank=True, null=True)
 
     def __str__(self):
