@@ -11,6 +11,7 @@ from .utils import process_extracted_text
 import pytesseract
 from PIL import Image
 import cv2
+from django.conf import settings
 import numpy as np
 import re
 import os
@@ -117,7 +118,7 @@ def verify_ocr(request):
             }
         )
         if created:
-            return qr_display(request,student.UID)  # Generate QR code for the new student
+            return generate_qr_code(request,student.UID)  # Generate QR code for the new student
         
         return JsonResponse({"success": True, "message": "Student data stored successfully!", "student_id": student.id})
 
@@ -217,19 +218,17 @@ def generate_qr_code(request, student_id):
     print("✅ QR Code saved!")
     
     
-    return redirect('qr_display', student_id=student.UID)
+    return qr_display(request,student.UID)
 
 
 
 def qr_display(request, student_id):
     student = get_object_or_404(Student, UID=student_id)
-    print("✅ Generating QR for:", student.name)  # Debugging
-
-    qr = qrcode.make(f"Student ID: {student.UID}, Name: {student.name}")
-    buffer = BytesIO()
-    qr.save(buffer, format="PNG")
-
-    student.qr_code.save(f"qr_{student.UID}.png", ContentFile(buffer.getvalue()), save=True)
-    print("✅ QR Code saved!")
-    print("✅ qr_display called for student_id:", student_id)  # Debugging{student_id})
-    return render(request, 'qr_display.html', {'student': student_id})
+    qr_code=student.qr_code
+    name=student.name
+    context = {
+        'image_url': qr_code.url,
+        'name': name
+    }
+    print(context)
+    return render(request, 'qr_display.html', context)
